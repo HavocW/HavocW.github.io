@@ -1,0 +1,1594 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="数据可视化,nginx">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-159998175-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-159998175-1');
+</script>
+
+
+    <title>GoAccess将web服务器日志可视化 | iGeeker</title>
+    <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/css/my.css">
+    
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/jquery/jquery.min.js"></script>
+    <script data-ad-client="ca-pub-6914153309632048" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <script src="https://v1.hitokoto.cn/?c=i&encode=js&select=%23hitokoto" defer></script>
+    <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+    <meta name="description" content="GoAccess web日志可视化有时候我们希望能分析一下web服务器的访问记录，如果是直接打开&#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log的话，虽然的确可以看到访问记录，但是数据太多了，也很难直观的分析出我们想要的结果。而使用命令来分析虽然可行，但是命令比较难记忆，也不算直观。 今天了解到了一款轻量易部署的工具——goaccess，可以用来将我们nginx服务器的访问日志可视化，将数据直观">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GoAccess将web服务器日志可视化">
+<meta property="og:url" content="https://igeeker.me/posts/goaccess.html">
+<meta property="og:site_name" content="iGeeker">
+<meta property="og:description" content="GoAccess web日志可视化有时候我们希望能分析一下web服务器的访问记录，如果是直接打开&#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log的话，虽然的确可以看到访问记录，但是数据太多了，也很难直观的分析出我们想要的结果。而使用命令来分析虽然可行，但是命令比较难记忆，也不算直观。 今天了解到了一款轻量易部署的工具——goaccess，可以用来将我们nginx服务器的访问日志可视化，将数据直观">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/0635.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/0601.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/0602.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/0605.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/0607.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/0613.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/0951.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/1030.png">
+<meta property="article:published_time" content="2020-04-11T09:46:43.000Z">
+<meta property="article:modified_time" content="2020-04-11T14:37:19.342Z">
+<meta property="article:author" content="HavocW">
+<meta property="article:tag" content="数据可视化">
+<meta property="article:tag" content="nginx">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/0635.png">
+
+<meta name="generator" content="Hexo 4.2.0"><link rel="alternate" href="/atom.xml" title="iGeeker" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">iGeeker</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">iGeeker</div>
+        <div class="logo-desc">
+            
+            Never really desperate, only the lost of the soul.
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			留言板
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+    </nav>
+
+</header>
+
+    
+<script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/cryptojs/crypto-js.min.js"></script>
+<script>
+    (function() {
+        let pwd = '';
+        if (pwd && pwd.length > 0) {
+            if (pwd !== CryptoJS.SHA256(prompt('请输入访问本文章的密码')).toString(CryptoJS.enc.Hex)) {
+                alert('密码错误，将返回主页！');
+                location.href = '/';
+            }
+        }
+    })();
+</script>
+
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/0831.png')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">GoAccess将web服务器日志可视化</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E5%BB%BA%E7%AB%99/">
+                                <span class="chip bg-color">建站</span>
+                            </a>
+                        
+                            <a href="/tags/nginx/">
+                                <span class="chip bg-color">nginx</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/%E5%BB%BA%E7%AB%99/" class="post-category">
+                                建站
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2020-04-11
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2020-04-11
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    1.8k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    7 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="GoAccess-web日志可视化"><a href="#GoAccess-web日志可视化" class="headerlink" title="GoAccess web日志可视化"></a>GoAccess web日志可视化</h1><p>有时候我们希望能分析一下web服务器的访问记录，如果是直接打开<em>/var/log/nginx/access.log</em>的话，虽然的确可以看到访问记录，但是数据太多了，也很难直观的分析出我们想要的结果。而使用命令来分析虽然可行，但是命令比较难记忆，也不算直观。</p>
+<p>今天了解到了一款轻量易部署的工具——<a href="https://goaccess.io/" target="_blank" rel="noopener">goaccess</a>，可以用来将我们nginx服务器的访问日志可视化，将数据直观的展现给我们。<em>除了nginx日志，该工具还可以将apache等服务端的日志可视化展示</em></p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<p><ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6914153309632048"
+     data-ad-slot="8639851589"></ins></p>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+<h2 id="安装GoAccess"><a href="#安装GoAccess" class="headerlink" title="安装GoAccess"></a>安装GoAccess</h2><p>官方给出了<a href="https://goaccess.io/download" target="_blank" rel="noopener">安装教程</a>，有linux包管理器安装，源码编译安装，docker镜像等多种部署方式，由于ubuntu18源里面的goaccess版本还算比较新，可以直接使用<code>sudo apt install goaccess</code>来安装</p>
+<p><strong>强烈建议不想折腾的话直接用包管理器安装！！！体验基本是相同的</strong>。</p>
+<p>不过这篇文章中我计划直接下载源码编译安装最新版，获得最新的体验:</p>
+<p>我计划使用geoip city的mmdb数据库(一开始我以为可以精确到城市，但是查看github issues发现他们其实还没做精确到城市的显示…),所以得先去下载geoip2的数据库 <a href="https://www.maxmind.com/" target="_blank" rel="noopener">https://www.maxmind.com/</a> 需要注册才能下载，还不能挂代理。</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token comment" spellcheck="true"># 首先安装依赖避免出现下面那些报错</span>
+<span class="token function">sudo</span> <span class="token function">apt-get</span> <span class="token function">install</span> libncursesw5-dev libglib2.0-dev libgeoip-dev libtokyocabinet-dev libbz2-dev
+$ <span class="token function">wget</span> https://tar.goaccess.io/goaccess-1.3.tar.gz
+$ <span class="token function">tar</span> -xzvf goaccess-1.3.tar.gz
+$ <span class="token function">cd</span> goaccess-1.3/
+$ ./configure --enable-utf8 --enable-geoip<span class="token operator">=</span>mmdb --enable-tcb<span class="token operator">=</span>btree <span class="token comment" spellcheck="true">#这里的各个配置可以查看教程中的介绍如果要开启ssl 使用 --with-ssl参数</span>
+$ <span class="token function">make</span>
+$ <span class="token function">make</span> <span class="token function">install</span></code></pre>
+<p>第一次尝试安装出现报错  </p>
+<p>checking for MMDB_open in -lmaxminddb… no<br>configure: error:<br>Missing development files for libmaxminddb library.*</p>
+<p>说明我们还没有安装 libmaxminddb库。</p>
+<blockquote>
+<p>libmaxminddb库提供一个用于读取MaxMind数据库文件的C 库，包括来自MaxMind的GeoIP2数据库。 这是定制的二进制格式，旨在方便快速查找IP地址，同时允许在与地址相关的数据类型中具有很大的灵活性。</p>
+</blockquote>
+<p>我们先进行该库的安装:</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">wget</span> https://github.com/maxmind/libmaxminddb/releases/download/1.4.2/libmaxminddb-1.4.2.tar.gz
+<span class="token function">tar</span> -zxvf libmaxminddb-1.4.2.tar.gz
+<span class="token function">cd</span> libmaxminddb-1.4.2
+$ ./configure
+$ <span class="token function">make</span>
+$ <span class="token function">make</span> check
+$ <span class="token function">sudo</span> <span class="token function">make</span> <span class="token function">install</span>
+$ <span class="token function">sudo</span> ldconfig</code></pre>
+<p>尝试configure的时候再次报错 <em>configure: error: **</em> Missing development libraries for ncursesw*，使用<code>sudo apt-get install libncursesw5-dev</code>补上我们缺少的依赖。</p>
+<p>之后还有一个依赖缺少问题 <em>configure: error: *** Missing development libraries for Tokyo Cabinet Database</em></p>
+<p><strong>所以记得在configure之前先安装依赖 sudo apt-get install libncursesw5-dev libglib2.0-dev libgeoip-dev libtokyocabinet-dev</strong></p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/0635.png" alt="./configure执行成功"></p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<p><ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6914153309632048"
+     data-ad-slot="8639851589"></ins></p>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+<p>之后再次执行<code>./configure --enable-utf8 --enable-geoip=mmdb --enable-tcb=btree</code>，执行成功之后再执行<code>make</code> <code>make install</code>来安装,然后使用<code>sudo cp goaccess /usr/bin/</code>将二进制文件移动到/usr/bin目录。之后编辑配置文件 <code>nano /usr/local/etc/goaccess/goaccess.conf</code>修改 geoip-database /usr/local/src/GeoLite2-City.mmdb <em>这里填你下载的数据库路径</em></p>
+<p>  <strong>编译安装还是比较麻烦，再次建议直接使用apt/yum/pacman安装</strong></p>
+<p>更多的安装教程可以查看上面的安装教程链接。</p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<p><ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6914153309632048"
+     data-ad-slot="8639851589"></ins></p>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+<h2 id="GoAccess的多种展示方式"><a href="#GoAccess的多种展示方式" class="headerlink" title="GoAccess的多种展示方式"></a>GoAccess的多种展示方式</h2><p>goaccess有多种数据可视化的方式,分别为:</p>
+<ol>
+<li>命令行输出格式化数据</li>
+<li>利用access.log生成静态的可视化数据</li>
+<li>生成实时可视化数据</li>
+</ol>
+<p><strong>注意，如果是编译安装且选择了 –enable-geoip=mmdb的话需要编辑配置文件，并在使用命令的时候带上参数 –config-file=/usr/local/etc/goaccess/goaccess.conf，如果是用包管理器安装的话则不需要</strong></p>
+<h3 id="命令行输出GoAccess"><a href="#命令行输出GoAccess" class="headerlink" title="命令行输出GoAccess"></a>命令行输出GoAccess</h3><p><code>goaccess /var/log/nginx/access.log -c</code>，会先询问你数据的格式，我这里的日志使用的是第一种。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/0601.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/0602.png" alt="命令行下的可视化数据"></p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<p><ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6914153309632048"
+     data-ad-slot="8639851589"></ins></p>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+<h3 id="解析accesslog生成静态html"><a href="#解析accesslog生成静态html" class="headerlink" title="解析accesslog生成静态html"></a>解析accesslog生成静态html</h3><p>GoAccess还可以解析access.log生成静态html，以更加直观的方式来展示数据。</p>
+<p><code>goaccess /var/log/nginx/access.log -o report.html --log-format=COMBINED</code>，之后再使用浏览器访问report.html即可查看报告，各种数据一应俱全。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/0605.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/0607.png" alt=""></p>
+<h3 id="实时解析访问日志"><a href="#实时解析访问日志" class="headerlink" title="实时解析访问日志"></a>实时解析访问日志</h3><p>GoAccess除了可以生成静态的html文件，还可以生成实时网站访问数据！</p>
+<p><code>goaccess /var/log/nginx/access.log -o /var/www/html/report.html --log-format=COMBINED --real-time-html  --config-file=/usr/local/etc/goaccess/goaccess.conf</code></p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/0613.png" alt=""></p>
+<h4 id="添加中文支持"><a href="#添加中文支持" class="headerlink" title="添加中文支持"></a>添加中文支持</h4><p>Goaccess 1.3之后的版本提供了多语言支持，先在命令行中执行 <code>apt install language-pack-zh-hans</code> 安装中文包，再使用<code>export LANG=zh_CN.UTF-8</code>修改环境变量，再次使用 <code>goaccess /var/log/nginx/access.log -o /var/www/html/report.html --log-format=COMBINED --real-time-html  --config-file=/usr/local/etc/goaccess/goaccess.conf</code>启动GoAccess可以发现已经是中文界面了。</p>
+<p>关于实时模式，可以查看官网的demo <a href="https://rt.goaccess.io/?20200209201008" target="_blank" rel="noopener">https://rt.goaccess.io/?20200209201008</a> </p>
+<h4 id="异常退出"><a href="#异常退出" class="headerlink" title="异常退出"></a>异常退出</h4><p>如果实时模式没有正常退出，可能无法再次正常启动，GoAccess默认使用7890 websocket端口，所以使用lsof -i:7890查看占用该端口的进程号并kill即可。</p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<p><ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6914153309632048"
+     data-ad-slot="8639851589"></ins></p>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+<h4 id="ssl支持"><a href="#ssl支持" class="headerlink" title="ssl支持"></a>ssl支持</h4><p>如果需要在加密连接上输出实时数据，则需要使用 <code>--ssl-cert=</code> 和 <code>--ssl-key=</code>,我在设置之后访问report.html发现数据依旧是静态的，突然想起我用了cloudflare cdn，而7890端口并不在cloudflare的支持端口列表里面，所以我使用参数 <code>--ws-url=wss://服务器域名(我们的浏览器会尝试与该域名的8443端口见了ws连接):8443 --port=8443</code> 把端口改成了8443。令人没想到的是，此时的report.html使用代理链接的时候是可以连接的，并可以查看实时信息，而直接连接的时候依旧是静态数据，tcping一看。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/0951.png" alt=""></p>
+<p>去cloudflare的官网可以发现如下内容</p>
+<blockquote>
+<p>只有端口 80 和 443 可兼容以下服务：</p>
+<ul>
+<li>对于启用了<strong>中国网络</strong>的域名的中国境内数据中心 HTTP/HTTPS 流量，</li>
+</ul>
+</blockquote>
+<p>也就是说，国内是没办法通过cloudflare连接非80/443端口的…</p>
+<h5 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h5><p>但是也不是没有办法连接，最后我想到了反向代理的方案。</p>
+<p>将启动参数改为<code>--ws-url=wss://你的域名.com/goaccess --port=7890</code></p>
+<p>修改nginx站点配置文件 <em>/etc/nginx/site-available/default</em>,添加下面内容</p>
+<pre><code>    location /goaccess {
+        proxy_redirect off;
+        proxy_pass https://127.0.0.1:7890;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection &quot;upgrade&quot;;
+        proxy_set_header Host $http_host;
+    }</code></pre><p>注意，如果你的站点配置文件里面开启了url重写，为了避免 /goaccess 受到影响，我们需要把该路径排除重写。</p>
+<pre><code># 把重写规则都放到location / 里面去
+location / { 
+    if (-f $request_filename/index.html){
+    rewrite (.*) $1/index.html break;
+    }
+    if (-f $request_filename/index.php){
+    rewrite (.*) $1/index.php;
+    }
+    if (!-f $request_filename){
+    rewrite (.*) /index.php;
+    }
+} 
+#下面什么都不需要做
+location /goaccess/ {
+}
+</code></pre><p>之后重启nginx，再访问report.html，发现左边齿轮处终于显示connect了。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/1030.png" alt=""></p>
+<p>如果你只是自己看或者不在意ip暴露，其实直接使用ip直接连接不走cdn就没那么麻烦了。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://goaccess.cc/?mod=man" target="_blank" rel="noopener">https://goaccess.cc/?mod=man</a></p>
+<p><a href="https://goaccess.io/" target="_blank" rel="noopener">https://goaccess.io/</a></p>
+<p><a href="http://www.xiaomlove.com/2019/04/01/simple-parse-nginx-access-log-by-goaccess/" target="_blank" rel="noopener">http://www.xiaomlove.com/2019/04/01/simple-parse-nginx-access-log-by-goaccess/</a></p>
+<p><a href="https://stackoverflow.com/questions/26093270/nginx-how-to-let-rewrite-rules-ignore-files-or-folders" target="_blank" rel="noopener">https://stackoverflow.com/questions/26093270/nginx-how-to-let-rewrite-rules-ignore-files-or-folders</a></p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<p><ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6914153309632048"
+     data-ad-slot="8639851589"></ins></p>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://igeeker.me" rel="external nofollow noreferrer">HavocW</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://igeeker.me/posts/goaccess.html">https://igeeker.me/posts/goaccess.html</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="https://igeeker.me" target="_blank">HavocW</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/%E5%BB%BA%E7%AB%99/">
+                                    <span class="chip bg-color">建站</span>
+                                </a>
+                            
+                                <a href="/tags/nginx/">
+                                    <span class="chip bg-color">nginx</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/share/js/social-share.min.js"></script>
+    
+
+    
+    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5e6539c7c57230f6"></script>
+    <div class="addthis_inline_share_toolbox"></div>
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+        <style>
+    .valine-card {
+        margin: 1.5rem auto;
+    }
+
+    .valine-card .card-content {
+        padding: 20px 20px 5px 20px;
+    }
+
+    #vcomments textarea {
+        box-sizing: border-box;
+        background: url("/medias/comment_bg.png") 100% 100% no-repeat;
+    }
+
+    #vcomments p {
+        margin: 2px 2px 10px;
+        font-size: 1.05rem;
+        line-height: 1.78rem;
+    }
+
+    #vcomments blockquote p {
+        text-indent: 0.2rem;
+    }
+
+    #vcomments a {
+        padding: 0 2px;
+        color: #4cbf30;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    #vcomments img {
+        max-width: 100%;
+        height: auto;
+        cursor: pointer;
+    }
+
+    #vcomments ol li {
+        list-style-type: decimal;
+    }
+
+    #vcomments ol,
+    ul {
+        display: block;
+        padding-left: 2em;
+        word-spacing: 0.05rem;
+    }
+
+    #vcomments ul li,
+    ol li {
+        display: list-item;
+        line-height: 1.8rem;
+        font-size: 1rem;
+    }
+
+    #vcomments ul li {
+        list-style-type: disc;
+    }
+
+    #vcomments ul ul li {
+        list-style-type: circle;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    #vcomments table, th, td {
+        border: 0;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments h1 {
+        font-size: 1.85rem;
+        font-weight: bold;
+        line-height: 2.2rem;
+    }
+
+    #vcomments h2 {
+        font-size: 1.65rem;
+        font-weight: bold;
+        line-height: 1.9rem;
+    }
+
+    #vcomments h3 {
+        font-size: 1.45rem;
+        font-weight: bold;
+        line-height: 1.7rem;
+    }
+
+    #vcomments h4 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    #vcomments h5 {
+        font-size: 1.1rem;
+        font-weight: bold;
+        line-height: 1.4rem;
+    }
+
+    #vcomments h6 {
+        font-size: 1rem;
+        line-height: 1.3rem;
+    }
+
+    #vcomments p {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+
+    #vcomments hr {
+        margin: 12px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+
+    #vcomments blockquote {
+        margin: 15px 0;
+        border-left: 5px solid #42b983;
+        padding: 1rem 0.8rem 0.3rem 0.8rem;
+        color: #666;
+        background-color: rgba(66, 185, 131, .1);
+    }
+
+    #vcomments pre {
+        font-family: monospace, monospace;
+        padding: 1.2em;
+        margin: .5em 0;
+        background: #272822;
+        overflow: auto;
+        border-radius: 0.3em;
+        tab-size: 4;
+    }
+
+    #vcomments code {
+        font-family: monospace, monospace;
+        padding: 1px 3px;
+        font-size: 0.92rem;
+        color: #e96900;
+        background-color: #f8f8f8;
+        border-radius: 2px;
+    }
+
+    #vcomments pre code {
+        font-family: monospace, monospace;
+        padding: 0;
+        color: #e8eaf6;
+        background-color: #272822;
+    }
+
+    #vcomments pre[class*="language-"] {
+        padding: 1.2em;
+        margin: .5em 0;
+    }
+
+    #vcomments code[class*="language-"],
+    pre[class*="language-"] {
+        color: #e8eaf6;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+
+    #vcomments b,
+    strong {
+        font-weight: bold;
+    }
+
+    #vcomments dfn {
+        font-style: italic;
+    }
+
+    #vcomments small {
+        font-size: 85%;
+    }
+
+    #vcomments cite {
+        font-style: normal;
+    }
+
+    #vcomments mark {
+        background-color: #fcf8e3;
+        padding: .2em;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+</style>
+
+<div class="card valine-card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; padding-left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="vcomments" class="card-content" style="display: grid">
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/valine/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/valine/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        appId: 'vdT1Td7UkThdKKWNqnhzHcNz-MdYXbMMI',
+        appKey: 'teALRStJMS3VelEd9r1tXGQv',
+        notify: 'false' === 'true',
+        verify: 'false' === 'true',
+        visitor: 'true' === 'true',
+        avatar: 'retro',
+        pageSize: '6',
+        lang: 'zh-cn',
+        placeholder: 'just go go'
+    });
+</script>
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/posts/buyvm-ryzen-vps.html">
+                    <div class="card-image">
+                        
+                        <img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020042020/04/1148.png" class="responsive-img" alt="Buyvm拉斯维加斯配置升级后测试">
+                        
+                        <span class="card-title">Buyvm拉斯维加斯配置升级后测试</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            Buyvm拉斯维加斯机房的vps处理器全部升级为了AMD Ryzen 9 3900X，且磁盘io也比原来高了很多，每加1.25美元可以增加256GB的块储存，G口无限流量，国际方向带宽比较充足，但是大陆速度大不如前。
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-04-16
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/vps%E8%AF%84%E6%B5%8B/" class="post-category">
+                                    vps评测
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/vps%E6%B5%8B%E8%AF%95/">
+                        <span class="chip bg-color">vps测试</span>
+                    </a>
+                    
+                    <a href="/tags/%E7%BE%8E%E5%9B%BDvps/">
+                        <span class="chip bg-color">美国vps</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/posts/vps-test.html">
+                    <div class="card-image">
+                        
+                        <img src="https://cdn.jsdelivr.net/gh/haojie06/imgStorage/imgs/2020/04/0426.png" class="responsive-img" alt="vps测试工具收集">
+                        
+                        <span class="card-title">vps测试工具收集</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            当买到的 vps 开机后，相信不少人对于 vps 的 cpu / 硬盘 / 网络等表现如何肯定是相当的好奇，我这里也搜集一些​vps 测试脚本 / 程序方便自己之后的使用，也方便大家的查询。
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-04-11
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E7%8E%A9%E6%9C%BA/" class="post-category">
+                                    玩机
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/vps/">
+                        <span class="chip bg-color">vps</span>
+                    </a>
+                    
+                    <a href="/tags/%E5%B7%A5%E5%85%B7/">
+                        <span class="chip bg-color">工具</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+    <footer class="page-footer bg-color">
+    
+    <div class="container row center-align" style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">2020</span>
+            <a href="https://igeeker.me" target="_blank">HavocW</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                class="white-color">35.2k</span>&nbsp;字
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2020";
+                    var startMonth = "3";
+                    var startDate = "7";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/haojie06" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="https://t.me/havocw" class="tooltipped" target="_blank" data-tooltip="联系我" data-position="top" data-delay="50">
+        <i class="fab fa-telegram-plane"></i>
+    </a>
+
+
+
+
+    <a href="mailto:whaojie06@gmail.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/materialize/materialize.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/aos/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/js/matery.js"></script>
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/background/ribbon-dynamic.js" async="async"></script>
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>

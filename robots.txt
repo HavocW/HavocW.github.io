@@ -1,0 +1,8 @@
+User-agent: Baiduspider
+Disallow: /posts/v2ray-single-port.html
+Disallow: /posts/hello-telegram.html
+Disallow: /posts/ipv6-only-vps.html
+Disallow: /posts/v2ray-single-port.html
+User-agent: *
+Sitemap: https://igeeker.me/sitemap.xml
+

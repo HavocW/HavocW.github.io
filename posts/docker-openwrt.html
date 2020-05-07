@@ -1,0 +1,1549 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="树莓派docker部署openwrt, iGeeker">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-159998175-1"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-159998175-1');
+</script>
+
+
+    <title>树莓派docker部署openwrt | iGeeker</title>
+    <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/css/my.css">
+    
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/jquery/jquery.min.js"></script>
+    <script data-ad-client="ca-pub-6914153309632048" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <script src="https://v1.hitokoto.cn/?c=i&encode=js&select=%23hitokoto" defer></script>
+    <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
+    <meta name="description" content="树莓派docker旁路由尝鲜 这篇文章记录了我是如何使用docker来配置软路由的，但是这种做法不仅适用于树莓派，其实也适用于其它的arm设备，甚至不同架构的设备(注意docker镜像的架构即可)。这是我第一次接触软路由，有什么问题请指正。 码字不易，转载请注明出处  多少人的树莓派买来新鲜了一阵子就丢在一旁吃灰了？虽然我的树莓派还好，被我用来做了无线ap以及挂上了smokeping,没事还拿来挂">
+<meta property="og:type" content="article">
+<meta property="og:title" content="树莓派docker部署openwrt">
+<meta property="og:url" content="https://igeeker.me/posts/docker-openwrt.html">
+<meta property="og:site_name" content="iGeeker">
+<meta property="og:description" content="树莓派docker旁路由尝鲜 这篇文章记录了我是如何使用docker来配置软路由的，但是这种做法不仅适用于树莓派，其实也适用于其它的arm设备，甚至不同架构的设备(注意docker镜像的架构即可)。这是我第一次接触软路由，有什么问题请指正。 码字不易，转载请注明出处  多少人的树莓派买来新鲜了一阵子就丢在一旁吃灰了？虽然我的树莓派还好，被我用来做了无线ap以及挂上了smokeping,没事还拿来挂">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0551.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0553.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0350.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0622.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0623.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0625.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0708.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0730.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0744.png">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0745.png">
+<meta property="article:published_time" content="2020-03-09T12:04:08.000Z">
+<meta property="article:modified_time" content="2020-04-24T14:16:29.962Z">
+<meta property="article:author" content="HavocW">
+<meta property="article:tag" content="树莓派">
+<meta property="article:tag" content="网络">
+<meta property="article:tag" content="玩机">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0551.png">
+
+<meta name="generator" content="Hexo 4.2.0"><link rel="alternate" href="/atom.xml" title="iGeeker" type="application/atom+xml">
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">iGeeker</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">iGeeker</div>
+        <div class="logo-desc">
+            
+            Never really desperate, only the lost of the soul.
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			留言板
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+    </ul>
+</div>
+
+        </div>
+
+        
+    </nav>
+
+</header>
+
+    
+<script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/cryptojs/crypto-js.min.js"></script>
+<script>
+    (function() {
+        let pwd = '';
+        if (pwd && pwd.length > 0) {
+            if (pwd !== CryptoJS.SHA256(prompt('请输入访问本文章的密码')).toString(CryptoJS.enc.Hex)) {
+                alert('密码错误，将返回主页！');
+                location.href = '/';
+            }
+        }
+    })();
+</script>
+
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0813.png')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">树莓派docker部署openwrt</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/">
+                                <span class="chip bg-color">树莓派</span>
+                            </a>
+                        
+                            <a href="/tags/%E7%BD%91%E7%BB%9C/">
+                                <span class="chip bg-color">网络</span>
+                            </a>
+                        
+                            <a href="/tags/%E7%8E%A9%E6%9C%BA/">
+                                <span class="chip bg-color">玩机</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/%E7%8E%A9%E6%9C%BA/" class="post-category">
+                                玩机
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2020-03-09
+                </div>
+                
+
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
+                    2020-04-24
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    2.3k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    8 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+
+        </div>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="树莓派docker旁路由尝鲜"><a href="#树莓派docker旁路由尝鲜" class="headerlink" title="树莓派docker旁路由尝鲜"></a>树莓派docker旁路由尝鲜</h1><blockquote>
+<p>这篇文章记录了我是如何使用docker来配置软路由的，但是这种做法不仅适用于树莓派，其实也适用于其它的arm设备，甚至不同架构的设备(注意docker镜像的架构即可)。这是我第一次接触软路由，有什么问题请指正。</p>
+<p>码字不易，转载请注明出处</p>
+</blockquote>
+<p>多少人的树莓派买来新鲜了一阵子就丢在一旁吃灰了？虽然我的树莓派还好，被我用来做了无线ap以及挂上了smokeping,没事还拿来挂挂bt之类的，不过是否还能有更大的用处呢？之前对于软路由早有耳闻，由于我家的主路由器输入Tenda AC10这种只能使用官方固件且不可刷系统的设备，折腾的空间小了很多，没啥可玩性，所以考虑使用树莓派作为旁路由接入网络。</p>
+<p>使用到的设备:</p>
+<ul>
+<li>天翼光猫进行网络拨号</li>
+<li>腾达AC10通过网线接到光猫</li>
+<li>树莓派3b+通过网线和AC10相连(虽然树莓派3b+的“千兆无线网”接的是USB2.0实际只能达到300Mbps的传输速率，而AC10虽然可玩性不高但是好歹是个全端口千兆的路由器，其实还是树莓派4更加适合作为软路由来玩，不过由于我家的网络只有百兆，所以这些都无所谓了)</li>
+</ul>
+<h2 id="关于树莓派系统"><a href="#关于树莓派系统" class="headerlink" title="关于树莓派系统"></a>关于树莓派系统</h2><p>树莓派的性能已经比大部分几百块钱的路由器强大很多了，如果专门刷一个openwrt总有些大材小用的感觉，所以我选择系统刷debian64，使用docker运行openwrt。</p>
+<p>关于系统镜像，因为原版的raspbian在树莓派的处理器升级成64位之后几年都没有支持64位，所以推荐使用一个64位系统，充分发挥树莓派的性能。这里推荐使用<a href="https://github.com/openfans-community-offical/Debian-Pi-Aarch64" target="_blank" rel="noopener">树莓派爱好者基地</a>的<strong><a href="https://github.com/openfans-community-offical/Debian-Pi-Aarch64" target="_blank" rel="noopener">Debian-Pi-Aarch64</a></strong>系统镜像，优化了性能，并且提供了webui等小工具，装好系统后不需要显示器即可配置，如果没有桌面需求的话建议直接装无桌面版那个就可以了。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0551.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0553.png" alt=""></p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<p><ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6914153309632048"
+     data-ad-slot="8639851589"></ins></p>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+<h2 id="docker部署openwrt"><a href="#docker部署openwrt" class="headerlink" title="docker部署openwrt"></a>docker部署openwrt</h2><h3 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h3><h4 id="安装docker并配置镜像"><a href="#安装docker并配置镜像" class="headerlink" title="安装docker并配置镜像"></a>安装docker并配置镜像</h4><p>首先安装docker</p>
+<pre class=" language-bash"><code class="language-bash">apt <span class="token function">install</span> docker</code></pre>
+<p>然后考虑到原版的源在国内下载缓慢，所以更换为阿里镜像源</p>
+<pre class=" language-bash"><code class="language-bash"><span class="token function">sudo</span> <span class="token function">tee</span> /etc/docker/daemon.json <span class="token operator">&lt;&lt;</span>-<span class="token string">'EOF'</span>
+<span class="token punctuation">{</span>
+  <span class="token string">"registry-mirrors"</span><span class="token keyword">:</span> <span class="token punctuation">[</span><span class="token string">"https://md4nbj2f.mirror.aliyuncs.com"</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+EOF
+
+<span class="token comment" spellcheck="true"># 重载配置文件</span>
+<span class="token function">sudo</span> systemctl daemon-reload   
+<span class="token comment" spellcheck="true"># 重启docker  </span>
+<span class="token function">sudo</span> systemctl restart docker</code></pre>
+<h4 id="准备网卡并建立虚拟网络"><a href="#准备网卡并建立虚拟网络" class="headerlink" title="准备网卡并建立虚拟网络"></a>准备网卡并建立虚拟网络</h4><p>开启网卡的混杂模式</p>
+<p><code>sudo ip link set eth0 promisc on</code></p>
+<blockquote>
+<p><strong>混杂模式</strong>（英语：promiscuous mode）是<a href="https://zh.wikipedia.org/wiki/电脑网络" target="_blank" rel="noopener">电脑网络</a>中的术语。是指一台机器的<a href="https://zh.wikipedia.org/wiki/网卡" target="_blank" rel="noopener">网卡</a>能够接收所有经过它的数据流，而不论其目的地址是否是它。</p>
+<p>一般计算机网卡都工作在非混杂模式下，此时网卡只接受来自网络端口的目的地址指向自己的数据。当网卡工作在混杂模式下时，网卡将来自接口的所有数据都捕获并交给相应的驱动程序。网卡的混杂模式一般在网络管理员分析网络数据作为网络故障诊断手段时用到，同时这个模式也被网络<a href="https://zh.wikipedia.org/wiki/黑客" target="_blank" rel="noopener">黑客</a>利用来作为网络数据窃听的入口。在<a href="https://zh.wikipedia.org/wiki/Linux" target="_blank" rel="noopener">Linux</a>操作系统中设置网卡混杂模式时需要管理员权限。在<a href="https://zh.wikipedia.org/wiki/Windows" target="_blank" rel="noopener">Windows</a>操作系统和Linux操作系统中都有使用混杂模式的<a href="https://zh.wikipedia.org/wiki/嗅探" target="_blank" rel="noopener">抓包</a>工具，比如著名的开源软件<a href="https://zh.wikipedia.org/wiki/Wireshark" target="_blank" rel="noopener">Wireshark</a>。</p>
+</blockquote>
+<p>然后我们需要创建一个<strong>macvlan</strong>模式的docker虚拟网络。关于docker网络模式的详解可以参考下面两篇文章:</p>
+<ul>
+<li><a href="https://ctimbai.github.io/2019/04/14/tech/docker-macvlan/" target="_blank" rel="noopener">https://ctimbai.github.io/2019/04/14/tech/docker-macvlan/</a></li>
+<li><a href="https://mp.weixin.qq.com/s?__biz=MzI1OTY2MzMxOQ==&mid=2247484015&idx=1&sn=8a8d9d3d3c89bbf8e9ed11e0a4b8d0ac&chksm=ea7436d7dd03bfc17434da984365b4a14917d3cb8931365c335fbab22851496fe8bf5c0a6d56&scene=21#wechat_redirect" target="_blank" rel="noopener">Docker 容器网络之单主机网络</a></li>
+<li><a href="https://mp.weixin.qq.com/s?__biz=MzI1OTY2MzMxOQ==&mid=2247484056&idx=1&sn=d67971f00e5a19ea0cb880f84122bc59&chksm=ea743620dd03bf363d5b38be69412e19c8ae6395f5310b189a44ce4078fae354d1fa0c786889&scene=21#wechat_redirect" target="_blank" rel="noopener">容器网络之多主机网络</a></li>
+</ul>
+<p>使用命令</p>
+<p><code>docker network create -d macvlan --subnet=192.168.0.0/24 --gateway=192.168.0.1 -o parent=eth0 macnet</code></p>
+<p>注意，请根据自己的网络环修改参数，如我的主路由(AC10)的ip为192.168.0.1而ip段为192.168.0.0/24。</p>
+<p>创建后，使用<code>docker network ls</code>即可查看已有网络。</p>
+<h4 id="获取镜像并启动容器"><a href="#获取镜像并启动容器" class="headerlink" title="获取镜像并启动容器"></a>获取镜像并启动容器</h4><p>我使用的docker image是<a href="https://hub.docker.com/r/buddyfly/openwrt-aarch64" target="_blank" rel="noopener">buddyfly/openwrt-aarch64</a>,先把镜像pull下来。</p>
+<p><code>docker pull buddyfly/openwrt-aarch64</code></p>
+<p>然后创建一个docker网络</p>
+<p>然后使用命令创建了一个名为openwrt的容器并运行.</p>
+<pre class=" language-bash"><code class="language-bash">docker run --name openwrt --restart always -d --network macnet --privileged buddyfly/openwrt-aarch64:latest</code></pre>
+<h4 id="修改容器网络参数"><a href="#修改容器网络参数" class="headerlink" title="修改容器网络参数"></a>修改容器网络参数</h4><p>进入容器</p>
+<p><code>docker exec -it openwrt /bin/bash</code></p>
+<p>修改网络参数</p>
+<p><code>vi /etc/config/network</code></p>
+<pre><code>config interface &#39;loopback&#39;
+        option ifname &#39;lo&#39;
+        option proto &#39;static&#39;
+        option ipaddr &#39;127.0.0.1&#39;
+        option netmask &#39;255.0.0.0&#39;
+
+config globals &#39;globals&#39;
+        option ula_prefix &#39;fde3:bd8c:2f68::/48&#39;
+
+config interface &#39;lan&#39;
+        option type &#39;bridge&#39;
+        option ifname &#39;eth0&#39;
+        option proto &#39;static&#39;
+        option ipaddr &#39;192.168.0.10&#39;
+        option netmask &#39;255.255.255.0&#39;
+        option gateway &#39;192.168.0.1&#39;
+        option dns &#39;192.168.0.1&#39;</code></pre><p>这里有三项是需要修改(添加)的，option gateway和option dns设置为主路由的ip，option ipaddr对应的ip则是这个“openwrt设别“在局域网内的ip，只需要设置个合理的值即可。</p>
+<p>配置好之后使用<code>/etc/init.d/network restart</code>重启网络，这时候局域网内便会多出一个192.168.0.10的设备</p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0350.png" alt=""></p>
+<h4 id="配置openwrt"><a href="#配置openwrt" class="headerlink" title="配置openwrt"></a>配置openwrt</h4><p>这时候访问192.168.0.10即可看见openwrt的登陆界面，默认密码为password</p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0622.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0623.png" alt=""></p>
+<p>到这里还没结束，我们还需要修改几个配置</p>
+<ol>
+<li><p>前往 网络-&gt;接口-&gt;LAN修改-&gt;DHCP服务 选择不在此接口提供dhcp服务</p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0625.png" alt=""></p>
+</li>
+<li><p>我个人在后来的使用时，出现了代理时使用GFW模式时，部分网站无法访问的情况，大概是因为我本地没有ipv6而软路由给我分配了ipv6的缘故，只需要把ipv6分配长度改为<strong>禁用</strong>即可。</p>
+<p>到这里基本就大功告成了！剩下的就是<del>体验软路由</del>继续折腾了。</p>
+</li>
+</ol>
+<h2 id="使用openwrt作为旁路由"><a href="#使用openwrt作为旁路由" class="headerlink" title="使用openwrt作为旁路由"></a>使用openwrt作为旁路由</h2><p>旁路网关接入网络后我们需要使流量经由旁路网关再进入互联网，有两种模式</p>
+<h3 id="全局流量自动经过旁路由"><a href="#全局流量自动经过旁路由" class="headerlink" title="全局流量自动经过旁路由"></a>全局流量自动经过旁路由</h3><p>该方案不需要自己在电脑连接网络的时候再手动设置网关，所有流量自动经过旁路由，需要修改主路由的dhcp服务器网关以及dns为旁路由的ip，然后重启所有设备。很多原版固件的路由器是做不到的。而我则是因为路由器(AC10)并不负责拨号,而是在光猫内置的路由处拨号，所以不能指定和光猫不同的网段，所以暂时没办法测试。</p>
+<h3 id="手动设置网关，使流量经过旁路由"><a href="#手动设置网关，使流量经过旁路由" class="headerlink" title="手动设置网关，使流量经过旁路由"></a>手动设置网关，使流量经过旁路由</h3><p>以win10为例，在网络选择上点击属性，编辑ip设置，修改网关和dns为旁路由的ip</p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0708.png" alt=""></p>
+<p>   保存之后重新连接，之后你所有的流量都会先经过软路由了。</p>
+<h2 id="软路由功能体验"><a href="#软路由功能体验" class="headerlink" title="软路由功能体验"></a>软路由功能体验</h2><h3 id="科学上网"><a href="#科学上网" class="headerlink" title="科学上网"></a>科学上网</h3><p>不少人使用旁路由设备是为了能够不额外安装客户端的情况下进行科学上网，那么我们也首先来进行代理的配置，这个镜像内置了ShadowSocksR Plus+以及PassWall，这里我就以PassWall为例了。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0730.png" alt=""></p>
+<p>在节点列表里面添加节点并启用，然后在基础设置里面选择好TCP节点，UDP节点和Socks5节点我都设置成与TCP节点相同了，然后默认代理模式和本机代理模式我都设置成了GFW名单，因为如果仅仅是绕过大陆ip的话还是会出现不少问题，毕竟不少国内网站使用了国外的服务器，一来浪费流量而来拖慢了访问速度。对于特定网站可以再结合chrome的switch omega插件+本地socks5代理或者干脆在PassWall的访问控制里面添加记录。</p>
+<p>配置好之后直接在电脑上访问youtube，流畅播放~ <em>如果出现了无法访问部分网站的情况，请查看上面我是怎么关闭ipv6分配的，说不定有效果。</em></p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0744.png" alt=""></p>
+<p>查看此时的CPU占用，看起来还是比较高的…也还好我家只是百兆宽带</p>
+<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0745.png" alt=""></p>
+<h3 id="其它的一些功能"><a href="#其它的一些功能" class="headerlink" title="其它的一些功能"></a>其它的一些功能</h3><h4 id="状态监控"><a href="#状态监控" class="headerlink" title="状态监控"></a>状态监控</h4><p>该镜像内置了netdata,只需要访问旁路由ip:19999即可进入上面那张图的页面，查看路由器（树莓派）的实时详细信息。自带的服务里面还有不少的插件，不过我还没有一一去尝试，欢迎大家自己搭建一个来尝尝鲜，好好利用起树莓派í ½í¸。</p>
+<h3 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h3><h4 id="旁路由同时开启ap"><a href="#旁路由同时开启ap" class="headerlink" title="旁路由同时开启ap"></a>旁路由同时开启ap</h4><p>其实这时候树莓派除了能用来做旁路由还能同时用来创建无线ap(至少直接在debian里面是可以的，openwrt里面我还没试过)，参考项目<a href="https://github.com/oblique/create_ap" target="_blank" rel="noopener">createap</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://juejin.im/post/5e62711fe51d4526e91f5a1b#heading-6" target="_blank" rel="noopener">树莓派不再吃灰 (二) Docker中使用openwrt做旁路网关</a></p>
+<p><a href="[http://jkdigger.me/2019/11/29/n1-openwrt%E6%97%81%E8%B7%AF%E7%94%B1%E8%AE%BE%E7%BD%AE/](http://jkdigger.me/2019/11/29/n1-openwrt旁路由设置/)">n1-openwrt旁路由设置</a></p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<p><ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6914153309632048"
+     data-ad-slot="8639851589"></ins></p>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://igeeker.me" rel="external nofollow noreferrer">HavocW</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://igeeker.me/posts/docker-openwrt.html">https://igeeker.me/posts/docker-openwrt.html</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="https://igeeker.me" target="_blank">HavocW</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/">
+                                    <span class="chip bg-color">树莓派</span>
+                                </a>
+                            
+                                <a href="/tags/%E7%BD%91%E7%BB%9C/">
+                                    <span class="chip bg-color">网络</span>
+                                </a>
+                            
+                                <a href="/tags/%E7%8E%A9%E6%9C%BA/">
+                                    <span class="chip bg-color">玩机</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/share/css/share.min.css">
+
+<div id="article-share">
+    
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/share/js/social-share.min.js"></script>
+    
+
+    
+    <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5e6539c7c57230f6"></script>
+    <div class="addthis_inline_share_toolbox"></div>
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+        <style>
+    .valine-card {
+        margin: 1.5rem auto;
+    }
+
+    .valine-card .card-content {
+        padding: 20px 20px 5px 20px;
+    }
+
+    #vcomments textarea {
+        box-sizing: border-box;
+        background: url("/medias/comment_bg.png") 100% 100% no-repeat;
+    }
+
+    #vcomments p {
+        margin: 2px 2px 10px;
+        font-size: 1.05rem;
+        line-height: 1.78rem;
+    }
+
+    #vcomments blockquote p {
+        text-indent: 0.2rem;
+    }
+
+    #vcomments a {
+        padding: 0 2px;
+        color: #4cbf30;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    #vcomments img {
+        max-width: 100%;
+        height: auto;
+        cursor: pointer;
+    }
+
+    #vcomments ol li {
+        list-style-type: decimal;
+    }
+
+    #vcomments ol,
+    ul {
+        display: block;
+        padding-left: 2em;
+        word-spacing: 0.05rem;
+    }
+
+    #vcomments ul li,
+    ol li {
+        display: list-item;
+        line-height: 1.8rem;
+        font-size: 1rem;
+    }
+
+    #vcomments ul li {
+        list-style-type: disc;
+    }
+
+    #vcomments ul ul li {
+        list-style-type: circle;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    #vcomments table, th, td {
+        border: 0;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments h1 {
+        font-size: 1.85rem;
+        font-weight: bold;
+        line-height: 2.2rem;
+    }
+
+    #vcomments h2 {
+        font-size: 1.65rem;
+        font-weight: bold;
+        line-height: 1.9rem;
+    }
+
+    #vcomments h3 {
+        font-size: 1.45rem;
+        font-weight: bold;
+        line-height: 1.7rem;
+    }
+
+    #vcomments h4 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    #vcomments h5 {
+        font-size: 1.1rem;
+        font-weight: bold;
+        line-height: 1.4rem;
+    }
+
+    #vcomments h6 {
+        font-size: 1rem;
+        line-height: 1.3rem;
+    }
+
+    #vcomments p {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+
+    #vcomments hr {
+        margin: 12px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+
+    #vcomments blockquote {
+        margin: 15px 0;
+        border-left: 5px solid #42b983;
+        padding: 1rem 0.8rem 0.3rem 0.8rem;
+        color: #666;
+        background-color: rgba(66, 185, 131, .1);
+    }
+
+    #vcomments pre {
+        font-family: monospace, monospace;
+        padding: 1.2em;
+        margin: .5em 0;
+        background: #272822;
+        overflow: auto;
+        border-radius: 0.3em;
+        tab-size: 4;
+    }
+
+    #vcomments code {
+        font-family: monospace, monospace;
+        padding: 1px 3px;
+        font-size: 0.92rem;
+        color: #e96900;
+        background-color: #f8f8f8;
+        border-radius: 2px;
+    }
+
+    #vcomments pre code {
+        font-family: monospace, monospace;
+        padding: 0;
+        color: #e8eaf6;
+        background-color: #272822;
+    }
+
+    #vcomments pre[class*="language-"] {
+        padding: 1.2em;
+        margin: .5em 0;
+    }
+
+    #vcomments code[class*="language-"],
+    pre[class*="language-"] {
+        color: #e8eaf6;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+
+    #vcomments b,
+    strong {
+        font-weight: bold;
+    }
+
+    #vcomments dfn {
+        font-style: italic;
+    }
+
+    #vcomments small {
+        font-size: 85%;
+    }
+
+    #vcomments cite {
+        font-style: normal;
+    }
+
+    #vcomments mark {
+        background-color: #fcf8e3;
+        padding: .2em;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+</style>
+
+<div class="card valine-card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; padding-left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="vcomments" class="card-content" style="display: grid">
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/valine/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/valine/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        appId: 'vdT1Td7UkThdKKWNqnhzHcNz-MdYXbMMI',
+        appKey: 'teALRStJMS3VelEd9r1tXGQv',
+        notify: 'false' === 'true',
+        verify: 'false' === 'true',
+        visitor: 'true' === 'true',
+        avatar: 'retro',
+        pageSize: '6',
+        lang: 'zh-cn',
+        placeholder: 'just go go'
+    });
+</script>
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/posts/gitalk-network-error.html">
+                    <div class="card-image">
+                        
+                        <img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/1125.png" class="responsive-img" alt="gitalk出现 Error: Network Error的解决">
+                        
+                        <span class="card-title">gitalk出现 Error: Network Error的解决</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            不少人在配置gitalk的插件时,遇到了提示Error: Network的情况，这篇文章介绍了配置gitalk的正确姿势。
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2020-03-10
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E5%BB%BA%E7%AB%99/" class="post-category">
+                                    建站
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%BB%BA%E7%AB%99/">
+                        <span class="chip bg-color">建站</span>
+                    </a>
+                    
+                    <a href="/tags/hexo%E6%8F%92%E4%BB%B6/">
+                        <span class="chip bg-color">hexo插件</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/posts/raspi-smokeping.html">
+                    <div class="card-image">
+                        
+                        <img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs//imgs/2020032020/03/0059.png" class="responsive-img" alt="树莓派使用docker快速搭建Smokeping">
+                        
+                        <span class="card-title">树莓派使用docker快速搭建Smokeping</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            使用docker在树莓派上快速部署smokeping,并安装中文字体
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-03-09
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E7%8E%A9%E6%9C%BA/" class="post-category">
+                                    玩机
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/">
+                        <span class="chip bg-color">树莓派</span>
+                    </a>
+                    
+                    <a href="/tags/%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/">
+                        <span class="chip bg-color">网络工具</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+    <footer class="page-footer bg-color">
+    
+    <div class="container row center-align" style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">2020</span>
+            <a href="https://igeeker.me" target="_blank">HavocW</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                class="white-color">35.2k</span>&nbsp;字
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2020";
+                    var startMonth = "3";
+                    var startDate = "7";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/haojie06" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="https://t.me/havocw" class="tooltipped" target="_blank" data-tooltip="联系我" data-position="top" data-delay="50">
+        <i class="fab fa-telegram-plane"></i>
+    </a>
+
+
+
+
+    <a href="mailto:whaojie06@gmail.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/js/search.js"></script>
+<script type="text/javascript">
+$(function () {
+    searchFunc("https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/materialize/materialize.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/aos/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/js/matery.js"></script>
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/background/ribbon-dynamic.js" async="async"></script>
+    
+    
+    
+    <script src="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
