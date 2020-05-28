@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://igeeker.me/"/>
-  <updated>2020-05-02T09:32:57.183Z</updated>
+  <updated>2020-05-28T09:42:28.619Z</updated>
   <id>https://igeeker.me/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>树莓派超频</title>
+    <link href="https://igeeker.me/posts/raspberry-overclock.html"/>
+    <id>https://igeeker.me/posts/raspberry-overclock.html</id>
+    <published>2020-05-28T09:39:19.000Z</published>
+    <updated>2020-05-28T09:42:28.619Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;树莓派3b修改为64位raspbian并进行超频&quot;&gt;&lt;a href=&quot;#树莓派3b修改为64位raspbian并进行超频&quot; class=&quot;headerlink&quot;
+        
+      
+    
+    </summary>
+    
+    
+      <category term="玩机" scheme="https://igeeker.me/categories/%E7%8E%A9%E6%9C%BA/"/>
+    
+    
+      <category term="树莓派" scheme="https://igeeker.me/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/"/>
+    
+  </entry>
   
   <entry>
     <title>Telegram指南</title>
@@ -580,35 +607,6 @@
       <category term="网络" scheme="https://igeeker.me/tags/%E7%BD%91%E7%BB%9C/"/>
     
       <category term="玩机" scheme="https://igeeker.me/tags/%E7%8E%A9%E6%9C%BA/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>树莓派使用docker快速搭建Smokeping</title>
-    <link href="https://igeeker.me/posts/raspi-smokeping.html"/>
-    <id>https://igeeker.me/posts/raspi-smokeping.html</id>
-    <published>2020-03-09T00:43:00.000Z</published>
-    <updated>2020-04-11T15:56:27.737Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;树莓派使用docker快速部署Smokeping&quot;&gt;&lt;a href=&quot;#树莓派使用docker快速部署Smokeping&quot; class=&quot;headerlink&quot;
-        
-      
-    
-    </summary>
-    
-    
-      <category term="玩机" scheme="https://igeeker.me/categories/%E7%8E%A9%E6%9C%BA/"/>
-    
-    
-      <category term="树莓派" scheme="https://igeeker.me/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/"/>
-    
-      <category term="网络工具" scheme="https://igeeker.me/tags/%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/"/>
     
   </entry>
   

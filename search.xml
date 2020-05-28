@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>树莓派超频</title>
+      <link href="/posts/raspberry-overclock.html"/>
+      <url>/posts/raspberry-overclock.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="树莓派3b修改为64位raspbian并进行超频"><a href="#树莓派3b修改为64位raspbian并进行超频" class="headerlink" title="树莓派3b修改为64位raspbian并进行超频"></a>树莓派3b修改为64位raspbian并进行超频</h1><p>前段时间从别人那听说树莓派4可以超频到2ghz，虽然我没有树莓派4，但是有一个吃灰的树莓派3，所以也想着试试超频。除此之外，现在官方的raspbian已经支持64位了，不过需要我们修改config.txt来实现。</p><h2 id="开启64位"><a href="#开启64位" class="headerlink" title="开启64位"></a>开启64位</h2><p>修改config.txt</p><p>在末尾增加一行<code>arm_64bit=1</code>，重启，此时已经是64位系统了。</p><p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020052020/05/0529.png" alt=""></p><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><p><ins class="adsbygoogle"     style="display:block; text-align:center;"     data-ad-layout="in-article"     data-ad-format="fluid"     data-ad-client="ca-pub-6914153309632048"     data-ad-slot="8639851589"></ins></p><script>     (adsbygoogle = window.adsbygoogle || []).push({});</script><h2 id="超频"><a href="#超频" class="headerlink" title="超频"></a>超频</h2><p>超频的话如果电源不足的话会直接死机，所以我使用了5V2A的电源才没有提示低电压警告。</p><p>查看当前的核心以及内存电压:</p><p><code>for id in core sdram_c sdram_i sdram_p ; do echo -e &quot;$id:\t$(vcgencmd measure_volts $id)&quot; ; done</code></p><p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020052020/05/0443.png" alt=""></p><p>监控温度</p><p><code>while true ; do vcgencmd measure_temp ; sleep 1 ; done</code></p><p>对于计算能力的测试可以使用下面的命令来创建4个线程来寻找√20000以内的质数</p><p><code>sysbench --num-threads=4 --test=cpu --cpu-max-prime=20000 run</code></p><p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020052020/05/0446.png" alt="未修改"></p><p>我们先尝试超频到1.3ghz，在 /boot/config.txt末尾添加如下内容</p><pre><code>core_freq=500 # GPU Frequency arm_freq=1300 # CPU Frequency gpu_freq=450over_voltage=5 #Electric power sent to CPU / GPU (4 = 1.3V) disable_splash=1 # Disables the display of the electric alert screen</code></pre><p>保存后再重启，查看此时的核心电压:</p><p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020052020/05/0451.png" alt=""></p><p>再次进行测试，可以看到，温度变高了，速度嘛。。也提升了一点。<strong>注意，默认达到85℃是会降频的。</strong></p><p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020052020/05/0453.png" alt=""></p><p>之后的测试中，改成1400Mhz之后居然直接无法启动了，修改成1350Mhz后虽然可以启动，但是开始测试之后没多久就死机了，由于我使用的是金属外壳被动散热的方式，所以温度控制的不太好，如果你的电源更好一些或者散热条件更好一些可以试试更高的频率，除此之外，gpu，内存甚至sd卡的频率都是可以超的，可以查看下面的文档。</p><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.raspberrypi.org/documentation/configuration/config-txt/overclocking.md" target="_blank" rel="noopener">https://www.raspberrypi.org/documentation/configuration/config-txt/overclocking.md</a></p><p><a href="https://yanke.info/?id=96" target="_blank" rel="noopener">https://yanke.info/?id=96</a></p><p><a href="https://www.freebuf.com/geek/161452.html" target="_blank" rel="noopener">https://www.freebuf.com/geek/161452.html</a></p><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><p><ins class="adsbygoogle"     style="display:block; text-align:center;"     data-ad-layout="in-article"     data-ad-format="fluid"     data-ad-client="ca-pub-6914153309632048"     data-ad-slot="8639851589"></ins></p><script>     (adsbygoogle = window.adsbygoogle || []).push({});</script>]]></content>
+      
+      
+      <categories>
+          
+          <category> 玩机 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 树莓派 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Telegram指南</title>
       <link href="/posts/hello-telegram.html"/>
       <url>/posts/hello-telegram.html</url>
