@@ -4,6 +4,33 @@
   
     
     <entry>
+      <title>使用443端口未被封锁的家宽建站</title>
+      <link href="/posts/home-web-server.html"/>
+      <url>/posts/home-web-server.html</url>
+      
+        <content type="html"><![CDATA[<h1 id="家宽建站"><a href="#家宽建站" class="headerlink" title="家宽建站"></a>家宽建站</h1><p>首先强调一点，家宽建站仅作为一次尝试，因为国内运营商是不允许家宽对外开放web服务的，要是被找出来可能会有一些麻烦…建议大家玩玩就好。<strong>首先要满足两点前提:</strong></p><ol><li>你的家宽有公网ip</li><li>当地运营商没有封锁443端口而是只封锁了80端口（比如我这，只阻断了80端口的tcp访问…甚至部分地区80端口也没有封锁？）</li></ol><p>大致思路很简单，就是使用cloudflare，开启https回源，让cloudflare的服务器访问源站（家宽下的服务器）的时候使用https访问443端口，另外强制https访问（即用户使用http访问你的网站的时候，在cloudflare处就转换为https）。</p><p>本文中，我直接使用了树莓派作为服务器。</p><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><p><ins class="adsbygoogle"     style="display:block; text-align:center;"     data-ad-layout="in-article"     data-ad-format="fluid"     data-ad-client="ca-pub-6914153309632048"     data-ad-slot="8639851589"></ins></p><script>     (adsbygoogle = window.adsbygoogle || []).push({});</script><h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>首先，由于家宽是动态ip所以需要先配置好ddns，推荐使用该项目<a href="https://github.com.cnpmjs.org/NewFuture/DDNS，配合DNSPOD可以实现较快的解析。" target="_blank" rel="noopener">https://github.com.cnpmjs.org/NewFuture/DDNS，配合DNSPOD可以实现较快的解析。</a></p><p>另外建议使用第三方CNAME接入（方便自选节点），当然直接使用Cloudflare也是可以的，注册一个cloudflare账号。</p><h2 id="接入cloudflare"><a href="#接入cloudflare" class="headerlink" title="接入cloudflare"></a>接入cloudflare</h2><p><em>如果你不是用的dnspod这种智能解析的话，直接在cloudflare里面添加记录，CNAME到ddns的域名并开启cdn即可。</em></p><p>我这里使用了cf partner的cname接入，以<a href="https://cdn.moeelf.com/" target="_blank" rel="noopener">萌精灵</a>为例：</p><ol><li>添加一个CNAME记录，记录名为home 只想我们ddns的域名入 ddns.example.com</li><li>查看下面的CNAME记录，可以看到一个 home.example.com.cdn.cloudflare.net</li><li>在dnspod里面添加CNAME记录，记录名home，指向 home.example.com.cdn.cloudflare.net</li></ol><p>这样就完成了CNAME接入了，然后需要修改一些cloudflare的配置:</p><p>首先修改加密模式为“完全”，不然cloudflare会使用http协议回源，那就访问不到服务器了。</p><p><img src="https://i.loli.net/2020/05/28/wAzhQynCaW7Dg8s.png" alt="修改加密模式"></p><p>然后前往“边缘证书”页面，开启“始终使用https”，之后我们需要在服务器上安装证书，虽然可以使用自签名证书，但是既然都到这了，那就直接使用cf提供的证书吧，前往<em>源服务器</em>页面，点击<strong>创建证书</strong>，可以创建一个仅用于cloudflare服务器与源服务器之间的证书，分别由私钥和证书部分，保存到树莓派上。</p><p><em>/etc/nginx/ssl/cert.pem</em>,<em>/etc/nginx/ssl/key.pem</em>。</p><h2 id="配置nginx"><a href="#配置nginx" class="headerlink" title="配置nginx"></a>配置nginx</h2><p>安装好了nginx之后，修改配置文件 <code>nano /etc/nginx/site-available/default</code>。添加一个server配置:</p><pre><code>server {        root /var/www/html;        index index.html index.htm index.nginx-debian.html;        server_name berry.aoyouer.com;        autoindex on;        autoindex_exact_size off;        autoindex_localtime on;        location / {                # First attempt to serve request as file, then                # as directory, then fall back to displaying a 404.                try_files $uri $uri/ =404;        }    listen [::]:443 ssl;     listen 443 ssl;     ssl_certificate /etc/nginx/ssl/cert.pem;    ssl_certificate_key /etc/nginx/ssl/key.pem;}</code></pre><p>编辑好保存之后使用<code>systemctl restart nginx</code>重启一下nginx，之后再访问home.example.com理论上就可以看到nginx的默认页面了。</p><p><img src="https://i.loli.net/2020/05/28/J8GNVQI93ofC1iP.png" alt="nginx"></p><p>另外，如果只是想做个文件下载服务器的话，可以在站点配置文件里面加入下面几行来开启nginx的文件索引功能:</p><pre><code>        autoindex on;        autoindex_exact_size off;        autoindex_localtime on;</code></pre><p>虽然现在用的是树莓派，不过真的想要用家宽建站的话，完全可以换成更强劲的机器，另外国内到国外的上传速度其实挺快的，基本能跑满上传。就这样，一个免费的（当然还是要电费和网费），性能强劲的建站方案就出现了，当然这种方案玩玩就好，正经做站还是别这样，毕竟存在一定的风险，并且家宽说不定什么时候不稳定断网了/家里停电了呢？</p><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><p><ins class="adsbygoogle"     style="display:block; text-align:center;"     data-ad-layout="in-article"     data-ad-format="fluid"     data-ad-client="ca-pub-6914153309632048"     data-ad-slot="8639851589"></ins></p><script>     (adsbygoogle = window.adsbygoogle || []).push({});</script>]]></content>
+      
+      
+      <categories>
+          
+          <category> 折腾 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 建站 </tag>
+            
+            <tag> 折腾 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>树莓派超频</title>
       <link href="/posts/raspberry-overclock.html"/>
       <url>/posts/raspberry-overclock.html</url>

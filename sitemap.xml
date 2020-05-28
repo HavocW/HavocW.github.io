@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://igeeker.me/posts/home-web-server.html</loc>
+    
+    <lastmod>2020-05-28T15:37:26.922Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://igeeker.me/posts/raspberry-overclock.html</loc>
     
     <lastmod>2020-05-28T09:42:28.619Z</lastmod>

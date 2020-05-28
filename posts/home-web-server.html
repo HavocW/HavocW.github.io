@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="树莓派使用docker快速搭建Smokeping, iGeeker">
+    <meta name="keywords" content="家宽,建站,cdn">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -27,7 +27,7 @@
 </script>
 
 
-    <title>树莓派使用docker快速搭建Smokeping | iGeeker</title>
+    <title>使用443端口未被封锁的家宽建站 | iGeeker</title>
     <link rel="icon" type="image/png" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/HavocW/havocw.github.io/libs/awesome/css/all.css">
@@ -43,21 +43,23 @@
 
     <script src="https://v1.hitokoto.cn/?c=i&encode=js&select=%23hitokoto" defer></script>
     <script src="https://sdk.jinrishici.com/v2/browser/jinrishici.js" charset="utf-8"></script>
-    <meta name="description" content="树莓派使用docker快速部署Smokeping Smokeping 是一款用于网络状况监测的工具，安装好之后它可以持续的记录到各个服务器的网络状况如ping值丢包率等等…并生成易读性高的可视化图表，如果想查看你的一台服务器的网络到手上其他服务器的网络的联通状况，或者你纯粹是想看你这台机器到各个区域，各大网站的联通状况都可以使用。考虑到需要长期运行，如果你需要在你的家中某台设备上安装Smokepi">
+    <meta name="description" content="家宽建站首先强调一点，家宽建站仅作为一次尝试，因为国内运营商是不允许家宽对外开放web服务的，要是被找出来可能会有一些麻烦…建议大家玩玩就好。首先要满足两点前提:  你的家宽有公网ip 当地运营商没有封锁443端口而是只封锁了80端口（比如我这，只阻断了80端口的tcp访问…甚至部分地区80端口也没有封锁？）  大致思路很简单，就是使用cloudflare，开启https回源，让cloudflar">
 <meta property="og:type" content="article">
-<meta property="og:title" content="树莓派使用docker快速搭建Smokeping">
-<meta property="og:url" content="https://igeeker.me/posts/raspi-smokeping.html">
+<meta property="og:title" content="使用443端口未被封锁的家宽建站">
+<meta property="og:url" content="https://igeeker.me/posts/home-web-server.html">
 <meta property="og:site_name" content="iGeeker">
-<meta property="og:description" content="树莓派使用docker快速部署Smokeping Smokeping 是一款用于网络状况监测的工具，安装好之后它可以持续的记录到各个服务器的网络状况如ping值丢包率等等…并生成易读性高的可视化图表，如果想查看你的一台服务器的网络到手上其他服务器的网络的联通状况，或者你纯粹是想看你这台机器到各个区域，各大网站的联通状况都可以使用。考虑到需要长期运行，如果你需要在你的家中某台设备上安装Smokepi">
+<meta property="og:description" content="家宽建站首先强调一点，家宽建站仅作为一次尝试，因为国内运营商是不允许家宽对外开放web服务的，要是被找出来可能会有一些麻烦…建议大家玩玩就好。首先要满足两点前提:  你的家宽有公网ip 当地运营商没有封锁443端口而是只封锁了80端口（比如我这，只阻断了80端口的tcp访问…甚至部分地区80端口也没有封锁？）  大致思路很简单，就是使用cloudflare，开启https回源，让cloudflar">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs//imgs/2020032020/03/2216.png">
-<meta property="article:published_time" content="2020-03-09T00:43:00.000Z">
-<meta property="article:modified_time" content="2020-04-11T15:56:27.737Z">
+<meta property="og:image" content="https://i.loli.net/2020/05/28/wAzhQynCaW7Dg8s.png">
+<meta property="og:image" content="https://i.loli.net/2020/05/28/J8GNVQI93ofC1iP.png">
+<meta property="article:published_time" content="2020-05-28T14:59:49.000Z">
+<meta property="article:modified_time" content="2020-05-28T15:37:26.922Z">
 <meta property="article:author" content="HavocW">
-<meta property="article:tag" content="树莓派">
-<meta property="article:tag" content="网络工具">
+<meta property="article:tag" content="家宽">
+<meta property="article:tag" content="建站">
+<meta property="article:tag" content="cdn">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs//imgs/2020032020/03/2216.png">
+<meta name="twitter:image" content="https://i.loli.net/2020/05/28/wAzhQynCaW7Dg8s.png">
 
 <meta name="generator" content="Hexo 4.2.0"><link rel="alternate" href="/atom.xml" title="iGeeker" type="application/atom+xml">
 <link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
@@ -287,12 +289,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs//imgs/2020032020/03/0059.png')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://i.loli.net/2020/05/28/RLGBNs1ASykHqCU.png')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">树莓派使用docker快速搭建Smokeping</h1>
+                    <h1 class="description center-align post-title">使用443端口未被封锁的家宽建站</h1>
                 </div>
             </div>
         </div>
@@ -409,12 +411,12 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/">
-                                <span class="chip bg-color">树莓派</span>
+                            <a href="/tags/%E5%BB%BA%E7%AB%99/">
+                                <span class="chip bg-color">建站</span>
                             </a>
                         
-                            <a href="/tags/%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/">
-                                <span class="chip bg-color">网络工具</span>
+                            <a href="/tags/%E6%8A%98%E8%85%BE/">
+                                <span class="chip bg-color">折腾</span>
                             </a>
                         
                     </div>
@@ -425,8 +427,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/%E7%8E%A9%E6%9C%BA/" class="post-category">
-                                玩机
+                            <a href="/categories/%E6%8A%98%E8%85%BE/" class="post-category">
+                                折腾
                             </a>
                         
                     </div>
@@ -438,28 +440,28 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-03-09
+                    2020-05-28
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2020-04-11
+                    2020-05-28
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.2k
+                    933
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    5 分
+                    3 分
                 </div>
                 
 
@@ -475,177 +477,15 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h1 id="树莓派使用docker快速部署Smokeping"><a href="#树莓派使用docker快速部署Smokeping" class="headerlink" title="树莓派使用docker快速部署Smokeping"></a>树莓派使用docker快速部署Smokeping</h1><blockquote>
-<p>Smokeping 是一款用于网络状况监测的工具，安装好之后它可以持续的记录到各个服务器的网络状况如ping值丢包率等等…并生成易读性高的可视化图表，如果想查看你的一台服务器的网络到手上其他服务器的网络的联通状况，或者你纯粹是想看你这台机器到各个区域，各大网站的联通状况都可以使用。考虑到需要长期运行，如果你需要在你的家中某台设备上安装Smokeping，树莓派是个不错的选择。</p>
-</blockquote>
-<p>Smokeping的<a href="[https://wiki.archlinux.org/index.php/Smokeping_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87)](https://wiki.archlinux.org/index.php/Smokeping_(简体中文))">常规安装</a>较为复杂，好在已有人做出了docker镜像，并支持x86-64 arm64 armhf架构，所以直接使用docker来快速安装即可 dockerhub链接如下 <a href="https://github.com/linuxserver/docker-smokeping" target="_blank" rel="noopener">linuxserver/smokeping</a></p>
-<h2 id="使用docker快速安装"><a href="#使用docker快速安装" class="headerlink" title="使用docker快速安装"></a>使用docker快速安装</h2><p>新建/home/scripts/smoke/文件夹用于映射smokeping相关数据。注意如果pull下面这个镜像较为缓慢的话可以考虑更换docker国内源。</p>
-<p><em>更换国内源的方法，编辑/etc/docker/daemon.json</em></p>
-<pre class=" language-json"><code class="language-json"><span class="token punctuation">{</span>
-  <span class="token property">"registry-mirrors"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"https://registry.docker-cn.com"</span><span class="token punctuation">]</span>
-<span class="token punctuation">}</span></code></pre>
-<p>然后重启docker即可。</p>
-<pre class=" language-shell"><code class="language-shell">docker create \
-  --name=smokeping \
-  -e PUID=1000 \
-  -e PGID=1000 \
-  -e TZ=Asia/Shanghai \
-  -p 80:80 \
-  -v /home/scripts/smoke/config:/config \
-  -v /home/scripts/smoke/data:/data \
-  --restart unless-stopped \
-  linuxserver/smokeping
-</code></pre>
-<p>pull完成之后使用<code>docker container ls</code>找到对应的container id(其实安装完之后也有提示)使用<code>docker start id</code>先启动该容器，启动会有一点慢，启动好之后配置文件应该都在config文件夹里面了。</p>
-<h2 id="配置Smokeping"><a href="#配置Smokeping" class="headerlink" title="配置Smokeping"></a>配置Smokeping</h2><p>这个版本的smokeping和网上大多数教程中的配置文件有一些不一样。如果需要添加监测对象需要在<code>Targets</code>里面添加。</p>
-<p>下面是一份配置示例 </p>
-<pre><code>*** Targets ***
-
-probe = FPing
-
-menu = Top
-title = Ping
-remark = Smokeping on raspberry pi.
-
-
-+ SERVER
-menu = Server Ping
-title = Ping status
-
-
-+ Other 
-menu = 三大网络监控 
-title = 监控统计 
-++ dianxin 
-menu = 电信网络监控 
-title = 电信网络监控列表 
-host = /Other/dianxin/dianxin-bj /Other/dianxin/dianxin-hlj /Other/dianxin/dianxin-tj /Other/dianxin/dianxin-sc /Other/dianxin/dianxin-sh /Other/dianxin/dianxin-gz 
-+++ dianxin-bj 
-menu = 北京电信 
-title = 北京电信 
-alerts = someloss 
-host = 202.96.199.133 
-
-+++ dianxin-hlj 
-menu = 黑龙江电信 
-title = 黑龙江电信 
-alerts = someloss 
-host = 219.147.198.242 
-
-+++ dianxin-tj 
-menu = 天津电信 
-title = 天津电信 
-alerts = someloss 
-host = 219.150.32.132 
-
-+++ dianxin-sc 
-menu = 四川电信 
-title = 四川电信 
-alerts = someloss 
-host = 61.139.2.69 
-
-+++ dianxin-sh 
-menu = 上海电信 
-title = 上海电信 
-alerts = someloss 
-host = 116.228.111.118 
-
-+++ dianxin-gz 
-menu = 广东电信 
-title = 广东电信 
-alerts = someloss 
-host = 113.111.211.22 
-
-++ liantong 
-menu = 联通网络监控 
-title = 联通网络监控列表 
-host = /Other/liantong/liantong-bj /Other/liantong/liantong-hlj /Other/liantong/liantong-tj /Other/liantong/liantong-sc /Other/liantong/liantong-sh /Other/liantong/liantong-gz 
-
-+++ liantong-bj 
-menu = 北京联通 
-title = 北京联通 
-alerts = someloss 
-host = 61.135.169.121 
-
-+++ liantong-hlj 
-menu = 黑龙江联通 
-title = 黑龙江联通 
-alerts = someloss 
-host = 202.97.224.69 
-
-+++ liantong-tj 
-menu = 天津联通 
-title = 天津联通 
-alerts = someloss 
-host = 202.99.96.68 
-
-+++ liantong-sc 
-menu = 四川联通 
-title = 四川联通 
-alerts = someloss 
-host = 119.6.6.6 
-
-+++ liantong-sh 
-menu = 上海联通 
-title = 上海联通 
-alerts = someloss 
-host = 210.22.84.3 
-
-+++ liantong-gz 
-menu = 广东联通 
-title = 广东联通 
-alerts = someloss 
-host = 221.5.88.88 
-
-++ yidong 
-menu = 移动网络监控 
-title = 移动网络监控列表 
-host = /Other/yidong/yidong-bj /Other/yidong/yidong-hlj /Other/yidong/yidong-tj /Other/yidong/yidong-sc /Other/yidong/yidong-sh /Other/yidong/yidong-gz  
-
-+++ yidong-bj 
-menu = 北京移动 
-title = 北京移动 
-alerts = someloss 
-host = 221.130.33.52 
-
-+++ yidong-hlj 
-menu = 黑龙江移动 
-title = 黑龙江移动 
-alerts = someloss 
-host = 211.137.241.35 
-
-+++ yidong-tj 
-menu = 天津移动 
-title = 天津移动 
-alerts = someloss 
-host = 211.137.160.5 
-
-+++ yidong-sc 
-menu = 四川移动 
-title = 四川移动 
-alerts = someloss 
-host = 218.201.4.3 
-
-+++ yidong-sh 
-menu = 上海移动 
-title = 上海移动 
-alerts = someloss 
-host = 117.131.19.23 
-
-+++ yidong-gz 
-menu = 广东移动
-title = 广东移动
-alerts = someloss
-host = 211.136.192.6</code></pre><p>编辑完成之后使用<code>docker restart 容器id</code>重启容器，之后访问树莓派ip:80就可以看到页面了，刚开始运行的十几分钟是不会有图表的，过一段时间再看就有了。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs//imgs/2020032020/03/2216.png" alt=""></p>
-<h2 id="解决中文字体显示方块的问题"><a href="#解决中文字体显示方块的问题" class="headerlink" title="解决中文字体显示方块的问题"></a>解决中文字体显示方块的问题</h2><p>如果我们使用了中文的命名，我们会发现Smokeping里面生成的图片中的中文不正常，因为该docker中缺少了中文字体，我们使用下列的操作进行安装。</p>
-<pre class=" language-shell"><code class="language-shell">#该镜像的使用的系统镜像是apline，所以软件的安装有一些不同
-docker exec -it id /bin/bash
-#安装文泉驿字体
-echo @edge http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories && apk add wqy-zenhei@edge
-apk add wqy-zenhei --update-cache --repository http://nl.alpinelinux.org/alpine/edge/testing --allow-untrusted</code></pre>
-<p>之后刷新网页，中文已经可以正常显示了。</p>
+                <h1 id="家宽建站"><a href="#家宽建站" class="headerlink" title="家宽建站"></a>家宽建站</h1><p>首先强调一点，家宽建站仅作为一次尝试，因为国内运营商是不允许家宽对外开放web服务的，要是被找出来可能会有一些麻烦…建议大家玩玩就好。<strong>首先要满足两点前提:</strong></p>
+<ol>
+<li>你的家宽有公网ip</li>
+<li>当地运营商没有封锁443端口而是只封锁了80端口（比如我这，只阻断了80端口的tcp访问…甚至部分地区80端口也没有封锁？）</li>
+</ol>
+<p>大致思路很简单，就是使用cloudflare，开启https回源，让cloudflare的服务器访问源站（家宽下的服务器）的时候使用https访问443端口，另外强制https访问（即用户使用http访问你的网站的时候，在cloudflare处就转换为https）。</p>
+<p>本文中，我直接使用了树莓派作为服务器。</p>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
 <p><ins class="adsbygoogle"
      style="display:block; text-align:center;"
      data-ad-layout="in-article"
@@ -655,6 +495,59 @@ apk add wqy-zenhei --update-cache --repository http://nl.alpinelinux.org/alpine/
 <script>
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
+
+
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><p>首先，由于家宽是动态ip所以需要先配置好ddns，推荐使用该项目<a href="https://github.com.cnpmjs.org/NewFuture/DDNS，配合DNSPOD可以实现较快的解析。" target="_blank" rel="noopener">https://github.com.cnpmjs.org/NewFuture/DDNS，配合DNSPOD可以实现较快的解析。</a></p>
+<p>另外建议使用第三方CNAME接入（方便自选节点），当然直接使用Cloudflare也是可以的，注册一个cloudflare账号。</p>
+<h2 id="接入cloudflare"><a href="#接入cloudflare" class="headerlink" title="接入cloudflare"></a>接入cloudflare</h2><p><em>如果你不是用的dnspod这种智能解析的话，直接在cloudflare里面添加记录，CNAME到ddns的域名并开启cdn即可。</em></p>
+<p>我这里使用了cf partner的cname接入，以<a href="https://cdn.moeelf.com/" target="_blank" rel="noopener">萌精灵</a>为例：</p>
+<ol>
+<li>添加一个CNAME记录，记录名为home 只想我们ddns的域名入 ddns.example.com</li>
+<li>查看下面的CNAME记录，可以看到一个 home.example.com.cdn.cloudflare.net</li>
+<li>在dnspod里面添加CNAME记录，记录名home，指向 home.example.com.cdn.cloudflare.net</li>
+</ol>
+<p>这样就完成了CNAME接入了，然后需要修改一些cloudflare的配置:</p>
+<p>首先修改加密模式为“完全”，不然cloudflare会使用http协议回源，那就访问不到服务器了。</p>
+<p><img src="https://i.loli.net/2020/05/28/wAzhQynCaW7Dg8s.png" alt="修改加密模式"></p>
+<p>然后前往“边缘证书”页面，开启“始终使用https”，之后我们需要在服务器上安装证书，虽然可以使用自签名证书，但是既然都到这了，那就直接使用cf提供的证书吧，前往<em>源服务器</em>页面，点击<strong>创建证书</strong>，可以创建一个仅用于cloudflare服务器与源服务器之间的证书，分别由私钥和证书部分，保存到树莓派上。</p>
+<p><em>/etc/nginx/ssl/cert.pem</em>,<em>/etc/nginx/ssl/key.pem</em>。</p>
+<h2 id="配置nginx"><a href="#配置nginx" class="headerlink" title="配置nginx"></a>配置nginx</h2><p>安装好了nginx之后，修改配置文件 <code>nano /etc/nginx/site-available/default</code>。添加一个server配置:</p>
+<pre><code>server {
+
+        root /var/www/html;
+        index index.html index.htm index.nginx-debian.html;
+        server_name berry.aoyouer.com;
+        autoindex on;
+        autoindex_exact_size off;
+        autoindex_localtime on;
+        location / {
+                # First attempt to serve request as file, then
+                # as directory, then fall back to displaying a 404.
+                try_files $uri $uri/ =404;
+        }
+    listen [::]:443 ssl; 
+    listen 443 ssl; 
+    ssl_certificate /etc/nginx/ssl/cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/key.pem;
+}</code></pre><p>编辑好保存之后使用<code>systemctl restart nginx</code>重启一下nginx，之后再访问home.example.com理论上就可以看到nginx的默认页面了。</p>
+<p><img src="https://i.loli.net/2020/05/28/J8GNVQI93ofC1iP.png" alt="nginx"></p>
+<p>另外，如果只是想做个文件下载服务器的话，可以在站点配置文件里面加入下面几行来开启nginx的文件索引功能:</p>
+<pre><code>        autoindex on;
+        autoindex_exact_size off;
+        autoindex_localtime on;</code></pre><p>虽然现在用的是树莓派，不过真的想要用家宽建站的话，完全可以换成更强劲的机器，另外国内到国外的上传速度其实挺快的，基本能跑满上传。就这样，一个免费的（当然还是要电费和网费），性能强劲的建站方案就出现了，当然这种方案玩玩就好，正经做站还是别这样，毕竟存在一定的风险，并且家宽说不定什么时候不稳定断网了/家里停电了呢？</p>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<p><ins class="adsbygoogle"
+     style="display:block; text-align:center;"
+     data-ad-layout="in-article"
+     data-ad-format="fluid"
+     data-ad-client="ca-pub-6914153309632048"
+     data-ad-slot="8639851589"></ins></p>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
 
             </div>
             <hr/>
@@ -680,7 +573,7 @@ apk add wqy-zenhei --update-cache --repository http://nl.alpinelinux.org/alpine/
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://igeeker.me/posts/raspi-smokeping.html">https://igeeker.me/posts/raspi-smokeping.html</a>
+                    <a href="https://igeeker.me/posts/home-web-server.html">https://igeeker.me/posts/home-web-server.html</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -718,12 +611,12 @@ apk add wqy-zenhei --update-cache --repository http://nl.alpinelinux.org/alpine/
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/">
-                                    <span class="chip bg-color">树莓派</span>
+                                <a href="/tags/%E5%BB%BA%E7%AB%99/">
+                                    <span class="chip bg-color">建站</span>
                                 </a>
                             
-                                <a href="/tags/%E7%BD%91%E7%BB%9C%E5%B7%A5%E5%85%B7/">
-                                    <span class="chip bg-color">网络工具</span>
+                                <a href="/tags/%E6%8A%98%E8%85%BE/">
+                                    <span class="chip bg-color">折腾</span>
                                 </a>
                             
                         </div>
@@ -1155,28 +1048,82 @@ apk add wqy-zenhei --update-cache --repository http://nl.alpinelinux.org/alpine/
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/posts/docker-openwrt.html">
+                <a href="/posts/home-web-server.html">
                     <div class="card-image">
                         
-                        <img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0813.png" class="responsive-img" alt="树莓派docker部署openwrt">
+                        <img src="https://i.loli.net/2020/05/28/RLGBNs1ASykHqCU.png" class="responsive-img" alt="使用443端口未被封锁的家宽建站">
                         
-                        <span class="card-title">树莓派docker部署openwrt</span>
+                        <span class="card-title">使用443端口未被封锁的家宽建站</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            树莓派使用docker部署openwrt并接入网络充当旁路网关，丰富路由器的功能
+                            如果你家宽带有公网ip，如果443端口还没有被运营商封锁，如果你想建一个网站玩玩，那么你可以尝试一下借助cdn，使用家宽，家里面的机器来建立一个常规端口(80/443)可以访问的网站。
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2020-03-09
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-05-28
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E6%8A%98%E8%85%BE/" class="post-category">
+                                    折腾
+                                </a>
+                            
+                            
                         </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E5%BB%BA%E7%AB%99/">
+                        <span class="chip bg-color">建站</span>
+                    </a>
+                    
+                    <a href="/tags/%E6%8A%98%E8%85%BE/">
+                        <span class="chip bg-color">折腾</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/posts/raspberry-overclock.html">
+                    <div class="card-image">
+                        
+                        <img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020052020/05/0541.png" class="responsive-img" alt="树莓派超频">
+                        
+                        <span class="card-title">树莓派超频</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            本文记录了我是如何开启raspbian的64位模式以及将树莓派3超频。
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-05-28
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -1194,70 +1141,6 @@ apk add wqy-zenhei --update-cache --repository http://nl.alpinelinux.org/alpine/
                     
                     <a href="/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/">
                         <span class="chip bg-color">树莓派</span>
-                    </a>
-                    
-                    <a href="/tags/%E7%BD%91%E7%BB%9C/">
-                        <span class="chip bg-color">网络</span>
-                    </a>
-                    
-                    <a href="/tags/%E7%8E%A9%E6%9C%BA/">
-                        <span class="chip bg-color">玩机</span>
-                    </a>
-                    
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/posts/zeptovm-vps.html">
-                    <div class="card-image">
-                        
-                        <img src="https://cdn.jsdelivr.net/gh/HavocW/iGeekerImgs/imgs/2020032020/03/0103.png" class="responsive-img" alt="Zeptovm圣彼得堡 欧洲方向的cn2gia线路">
-                        
-                        <span class="card-title">Zeptovm圣彼得堡 欧洲方向的cn2gia线路</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            在晚高峰测试了Zeptovm圣彼得堡CN2 GIA线路的vps，仅作为测试
-                        
-                    </div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-03-08
-                            </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/vps%E8%AF%84%E6%B5%8B/" class="post-category">
-                                    vps评测
-                                </a>
-                            
-                            
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/vps%E8%AF%84%E6%B5%8B/">
-                        <span class="chip bg-color">vps评测</span>
-                    </a>
-                    
-                    <a href="/tags/%E4%BF%84%E7%BD%97%E6%96%AFvps/">
-                        <span class="chip bg-color">俄罗斯vps</span>
-                    </a>
-                    
-                    <a href="/tags/cn2/">
-                        <span class="chip bg-color">cn2</span>
                     </a>
                     
                 </div>

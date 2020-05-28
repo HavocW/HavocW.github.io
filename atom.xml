@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://igeeker.me/"/>
-  <updated>2020-05-28T09:42:28.619Z</updated>
+  <updated>2020-05-28T15:37:26.922Z</updated>
   <id>https://igeeker.me/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>使用443端口未被封锁的家宽建站</title>
+    <link href="https://igeeker.me/posts/home-web-server.html"/>
+    <id>https://igeeker.me/posts/home-web-server.html</id>
+    <published>2020-05-28T14:59:49.000Z</published>
+    <updated>2020-05-28T15:37:26.922Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;家宽建站&quot;&gt;&lt;a href=&quot;#家宽建站&quot; class=&quot;headerlink&quot;
+        
+      
+    
+    </summary>
+    
+    
+      <category term="折腾" scheme="https://igeeker.me/categories/%E6%8A%98%E8%85%BE/"/>
+    
+    
+      <category term="建站" scheme="https://igeeker.me/tags/%E5%BB%BA%E7%AB%99/"/>
+    
+      <category term="折腾" scheme="https://igeeker.me/tags/%E6%8A%98%E8%85%BE/"/>
+    
+  </entry>
   
   <entry>
     <title>树莓派超频</title>
@@ -576,37 +605,6 @@
       <category term="建站" scheme="https://igeeker.me/tags/%E5%BB%BA%E7%AB%99/"/>
     
       <category term="hexo插件" scheme="https://igeeker.me/tags/hexo%E6%8F%92%E4%BB%B6/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>树莓派docker部署openwrt</title>
-    <link href="https://igeeker.me/posts/docker-openwrt.html"/>
-    <id>https://igeeker.me/posts/docker-openwrt.html</id>
-    <published>2020-03-09T12:04:08.000Z</published>
-    <updated>2020-04-24T14:16:29.962Z</updated>
-    
-    <summary type="html">
-    
-      
-      
-        
-        
-          &lt;h1 id=&quot;树莓派docker旁路由尝鲜&quot;&gt;&lt;a href=&quot;#树莓派docker旁路由尝鲜&quot; class=&quot;headerlink&quot;
-        
-      
-    
-    </summary>
-    
-    
-      <category term="玩机" scheme="https://igeeker.me/categories/%E7%8E%A9%E6%9C%BA/"/>
-    
-    
-      <category term="树莓派" scheme="https://igeeker.me/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/"/>
-    
-      <category term="网络" scheme="https://igeeker.me/tags/%E7%BD%91%E7%BB%9C/"/>
-    
-      <category term="玩机" scheme="https://igeeker.me/tags/%E7%8E%A9%E6%9C%BA/"/>
     
   </entry>
   
