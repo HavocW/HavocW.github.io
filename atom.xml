@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://igeeker.me/"/>
-  <updated>2020-05-28T16:11:22.653Z</updated>
+  <updated>2020-05-29T09:01:14.265Z</updated>
   <id>https://igeeker.me/</id>
   
   <author>
@@ -15,6 +15,35 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>树莓派64位raspbian系统尝鲜</title>
+    <link href="https://igeeker.me/posts/raspberrypi-os-64.html"/>
+    <id>https://igeeker.me/posts/raspberrypi-os-64.html</id>
+    <published>2020-05-29T04:13:28.000Z</published>
+    <updated>2020-05-29T09:01:14.265Z</updated>
+    
+    <summary type="html">
+    
+      
+      
+        
+        
+          &lt;h1 id=&quot;树莓派64位官方系统尝鲜&quot;&gt;&lt;a href=&quot;#树莓派64位官方系统尝鲜&quot; class=&quot;headerlink&quot;
+        
+      
+    
+    </summary>
+    
+    
+      <category term="玩机" scheme="https://igeeker.me/categories/%E7%8E%A9%E6%9C%BA/"/>
+    
+    
+      <category term="树莓派" scheme="https://igeeker.me/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/"/>
+    
+      <category term="玩机" scheme="https://igeeker.me/tags/%E7%8E%A9%E6%9C%BA/"/>
+    
+  </entry>
   
   <entry>
     <title>使用443端口未被封锁的家宽建站</title>
@@ -572,33 +601,6 @@
       <category term="笔记" scheme="https://igeeker.me/tags/%E7%AC%94%E8%AE%B0/"/>
     
       <category term="科学上网" scheme="https://igeeker.me/tags/%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>树莓派旁路由科学上网体验</title>
-    <link href="https://igeeker.me/posts/raspberry-openwrt-v2.html"/>
-    <id>https://igeeker.me/posts/raspberry-openwrt-v2.html</id>
-    <published>2020-03-11T03:45:09.000Z</published>
-    <updated>2020-05-07T04:01:09.978Z</updated>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;树莓派旁路由科学上网体验&quot;&gt;&lt;a href=&quot;#树莓派旁路由科学上网体验&quot; class=&quot;headerlink&quot; title=&quot;树莓派旁路由科学上网体验&quot;&gt;&lt;/a&gt;树莓派旁路由科学上网体验&lt;/h1&gt;&lt;p&gt;之前的一篇文章&lt;a href=&quot;https://igeeker.me/wanji/dockeropenwrt/&quot;&gt;树莓派使用docker部署openwrt&lt;/a&gt;记录了我是如何通过docker在树莓派上使用openwrt并作为旁路网关的，不少人用旁路网关都有一个共同的想法——不需要再在设备上额外安装各类代理的客户端，我这次也实际体验了树莓派作为旁路网关，运行v2ray使用ws+tls的传输模式来进行科学上网，并记录了速度和性能占用。&lt;/p&gt;
-    
-    </summary>
-    
-    
-      <category term="玩机" scheme="https://igeeker.me/categories/%E7%8E%A9%E6%9C%BA/"/>
-    
-    
-      <category term="树莓派" scheme="https://igeeker.me/tags/%E6%A0%91%E8%8E%93%E6%B4%BE/"/>
-    
-      <category term="科学上网" scheme="https://igeeker.me/tags/%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91/"/>
-    
-      <category term="折腾" scheme="https://igeeker.me/tags/%E6%8A%98%E8%85%BE/"/>
-    
-      <category term="openwrt" scheme="https://igeeker.me/tags/openwrt/"/>
     
   </entry>
   

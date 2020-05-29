@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://igeeker.me/posts/raspberrypi-os-64.html</loc>
+    
+    <lastmod>2020-05-29T09:01:14.265Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://igeeker.me/posts/home-web-server.html</loc>
     
     <lastmod>2020-05-28T16:11:22.653Z</lastmod>
@@ -44,7 +51,14 @@
   </url>
   
   <url>
-    <loc>https://igeeker.me/tags/index.html</loc>
+    <loc>https://igeeker.me/friends/index.html</loc>
+    
+    <lastmod>2020-05-07T04:01:10.102Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://igeeker.me/contact/index.html</loc>
     
     <lastmod>2020-05-07T04:01:10.102Z</lastmod>
     
@@ -65,14 +79,7 @@
   </url>
   
   <url>
-    <loc>https://igeeker.me/contact/index.html</loc>
-    
-    <lastmod>2020-05-07T04:01:10.102Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://igeeker.me/friends/index.html</loc>
+    <loc>https://igeeker.me/tags/index.html</loc>
     
     <lastmod>2020-05-07T04:01:10.102Z</lastmod>
     
